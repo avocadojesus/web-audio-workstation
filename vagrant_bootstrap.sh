@@ -26,7 +26,7 @@ server {
   server_name  localhost;
 
   location / {
-    proxy_pass http://localhost:8069;
+    proxy_pass http://localhost:1337;
     proxy_http_version 1.1;
     proxy_set_header Upgrade \$http_upgrade;
     proxy_set_header Connection 'upgrade';
