@@ -23,6 +23,7 @@
     "google-libphonenumber": "^1.0.7",
     "guid": "0.0.12",
     "http-status": "^0.2.0",
+    "jade": "^1.11.0",
     "jsonwebtoken": "^5.4.0",
     "knex": "^0.8.6",
     "mysql": "^2.9.0",
