@@ -1,0 +1,22 @@
+[
+  {
+    "model": "User",
+    "data": {
+      "id": "5fd5f408-670a-4e33-aa79-7efdb4d22543",
+      "phone_number": "7149245761",
+      "password": "ttpassword123",
+      "created": "2015-11-16 05:37:22",
+      "updated": "2015-11-16 05:37:22"
+    }
+  },
+  {
+    "model": "User",
+    "data": {
+      "id": "9ccc3308-991d-4755-b8f1-1dec53f00ca0",
+      "phone_number": "7149242222",
+      "password": "ttpassword123",
+      "created": "2015-11-16 05:37:22",
+      "updated": "2015-11-16 05:37:22"
+    }
+  }
+]
