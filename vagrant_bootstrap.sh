@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# collect environment vars from /.waw/environment.json file
+DB_HOST=`cat /.waw/env.json | python -c 'import json, sys; print json.load(sys.stdin)["DB_HOST"]'`
+DB_USERNAME=`cat /.waw/env.json | python -c 'import json, sys; print json.load(sys.stdin)["DB_USERNAME"]'`
+DB_PASSWORD=`cat /.waw/env.json | python -c 'import json, sys; print json.load(sys.stdin)["DB_PASSWORD"]'`
+DB_NAME=`cat /.waw/env.json | python -c 'import json, sys; print json.load(sys.stdin)["DB_NAME"]'`
+
 # update / upgrade
 sudo apt-get update
 sudo apt-get -y upgrade
@@ -26,7 +32,7 @@ server {
   server_name  localhost;
 
   location / {
-    proxy_pass http://localhost:1337;
+    proxy_pass http://localhost:8069;
     proxy_http_version 1.1;
     proxy_set_header Upgrade \$http_upgrade;
     proxy_set_header Connection 'upgrade';
@@ -45,6 +51,22 @@ sudo service nginx restart
 sudo sed -i 's/user www-data/user vagrant/g' /etc/nginx/nginx.conf
 sudo sed -i 's/sendfile on;/sendfile off;/g' /etc/nginx/nginx.conf
 
+# make database.json file
+DB_JSON="
+{
+  \"dev\":
+  {
+    \"host\": \"$DB_HOST\",
+    \"user\": \"$DB_USERNAME\",
+    \"password\": \"$DB_PASSWORD\",
+    \"database\": \"$DB_NAME\",
+    \"driver\": \"mysql\",
+    \"multipleStatements\": true
+  }
+}
+"
+touch /vagrant/database.json
+echo $DB_JSON > /vagrant/database.json
 
 # install node packages
 sudo curl -sL https://deb.nodesource.com/setup_0.12 | sudo sh
@@ -52,11 +74,11 @@ sudo apt-get -y install nodejs
 # mkdir /home/vagrant/node_modules
 # ln -s /home/vagrant/node_modules/ /vagrant/node_modules
 sudo npm install -g npm
-
 # sudo ln -s /usr/bin/nodejs /usr/bin/node
 sudo npm install -g gulp
 sudo npm install -g forever
-sudo npm install -g sails
+sudo npm install -g db-migrate
+sudo npm install -g db-migrate-mysql
 sudo npm install -g mocha
 
 # remove apache
@@ -67,16 +89,16 @@ sudo chown -R vagrant:root /var/log
 
 # install dependancies
 cd /vagrant
-npm install
+sudo npm install --unsafe-perm --no-bin-links
 
 # MySQL setup
 echo "Configuring MySQL..."
 if [ ! -f /var/log/databasesetup ];
 then
     # Setup database
-    echo "CREATE USER 'waw'@'%' IDENTIFIED BY 'zzzz'" | mysql -uroot -prootpass
-    echo "CREATE DATABASE waw" | mysql -uroot -prootpass
-    echo "GRANT ALL ON waw.* TO 'waw'@'%'" | mysql -uroot -prootpass
+    echo "CREATE USER '$DB_USERNAME'@'%' IDENTIFIED BY '$DB_PASSWORD'" | mysql -uroot -prootpass
+    echo "CREATE DATABASE $DB_NAME" | mysql -uroot -prootpass
+    echo "GRANT ALL ON $DB_NAME.* TO '$DB_USERNAME'@'%'" | mysql -uroot -prootpass
 
     # Set flag file
     touch /var/log/databasesetup
@@ -85,9 +107,12 @@ then
     sudo service mysql restart
 fi
 
-echo "Welcome to the CODEZONEEEEE!"
+# run migration
+db-migrate up
+
+echo "Welcome to Tiqtok!"
 echo "mysql host: http://localhost:8788"
-echo "mysql username: waw"
-echo "mysql password: zzzz"
-echo "mysql database: waw"
+echo "mysql username: $DB_USERNAME"
+echo "mysql password: $DB_PASSWORD"
+echo "mysql database: $DB_NAME"
 echo "url: http://localhost:8787"
