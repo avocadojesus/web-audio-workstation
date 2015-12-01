@@ -4,22 +4,22 @@ var server = require('../../server');
 var status = require('http-status');
 var db = require('../../app/models/sequelize');
 var guid = require('guid');
-var TTFixtures = require('../../app/services/tt-fixtures');
+var Fixtures = require('../../app/services/fixtures');
 var sequelize = require('../../app/models/sequelize');
 var User = db.User;
 
 describe('users model', function() {
 
   beforeEach(function(done) {
-    TTFixtures.delete().then(function(){
-      TTFixtures.create().then(function() {
+    Fixtures.delete().then(function(){
+      Fixtures.create().then(function() {
         done();
       });
     });
   });
 
   after(function() {
-    TTFixtures.delete();
+    Fixtures.delete();
   })
 
   it ('should create user', function(done) {

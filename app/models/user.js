@@ -1,9 +1,9 @@
 var Sequelize = require('sequelize');
 var Promise = require('bluebird');
 var guid = require('guid');
-var TTError = require('../services/tt-error');
-var TTValidator = require('../services/tt-validator');
-var TTEncrypt = require('../services/tt-encrypt');
+var Error = require('../services/error');
+var Validator = require('../services/validator');
+var Encrypt = require('../services/encrypt');
 var UserRestSchema = require('../rest-schemas/user-rest-schema');
 var Async = require('async');
 
@@ -20,7 +20,7 @@ module.exports = function(sequelize, DataTypes) {
   function __comparePasswords(password) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      TTEncrypt.compare(password, self.password)
+      Encrypt.compare(password, self.password)
         .then(function(is_equal) {
           resolve(is_equal);
         }).catch(function(err) {
@@ -76,7 +76,7 @@ module.exports = function(sequelize, DataTypes) {
     updatedAt: 'updated',
     classMethods: {
       associate: function(models) {
-        
+
       }
     },
     instanceMethods: {
@@ -88,12 +88,12 @@ module.exports = function(sequelize, DataTypes) {
         var self = this;
         return new Promise(function(resolve, reject) {
           // validate phone number
-          if (!TTValidator.isPhoneNumber(user.phone_number))
-            reject(new TTError(412, 'This phone number is invalid'));
+          if (!Validator.isPhoneNumber(user.phone_number))
+            reject(new Error(412, 'This phone number is invalid'));
 
           // validate password
-          if (!TTValidator.isPassword(user.password))
-            reject(new TTError(412, 'This password is invalid'));
+          if (!Validator.isPassword(user.password))
+            reject(new Error(412, 'This password is invalid'));
 
           Async.parallel([
             // make sure phone number doesnt exist in database
@@ -105,14 +105,14 @@ module.exports = function(sequelize, DataTypes) {
                   }
                 })
                 .then(function(existing_user) {
-                  if (existing_user) return cb(new TTError(412, 'User Exists'));
+                  if (existing_user) return cb(new Error(412, 'User Exists'));
                   return cb(null);
                 });
             },
 
             // hash password
             function(cb) {
-              TTEncrypt.hash(user.password)
+              Encrypt.hash(user.password)
                 .then(function(hash) {
                   user.password = hash;
                   return cb(null);

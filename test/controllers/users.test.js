@@ -2,7 +2,7 @@ var assert = require('assert');
 var superagent = require('superagent');
 var server = require('../../server');
 var status = require('http-status');
-var TTFixtures = require('../../app/services/tt-fixtures');
+var Fixtures = require('../../app/services/fixtures');
 
 describe('users controller', function() {
   var app;
@@ -16,8 +16,8 @@ describe('users controller', function() {
   });
 
   beforeEach(function(done) {
-    TTFixtures.delete().then(function(){
-      TTFixtures.create().then(function() {
+    Fixtures.delete().then(function(){
+      Fixtures.create().then(function() {
         done();
       });
     });

@@ -1,8 +1,8 @@
 var User = require('../models/user');
-var TTValidator = require('../services/tt-validator');
-var TTPermissions = require('../services/tt-permissions');
-var TTAuth = require('../services/tt-auth');
-var TTEncrypt = require('../services/tt-encrypt');
+var Validator = require('../services/validator');
+var Permissions = require('../services/permissions');
+var Auth = require('../services/auth');
+var Encrypt = require('../services/encrypt');
 
 /**
  * GET /api/v1/users(/:id)
@@ -26,10 +26,10 @@ exports.get = function(req, res, io) {
  */
 exports.login = function(req, res) {
   // sanitize input
-  if (!TTValidator.toPhoneNumber(req.body.phone_number))
+  if (!Validator.toPhoneNumber(req.body.phone_number))
     return res.error(412, 'Invalid format for phone number');
 
-  if (!TTValidator.isPassword(req.body.password))
+  if (!Validator.isPassword(req.body.password))
     return res.error(412, 'Invalid argument for password');
 
   User
@@ -43,7 +43,7 @@ exports.login = function(req, res) {
 
       user.comparePasswords(req.body.password).then(function(is_equal) {
         if (!is_equal) return res.error(401, 'Invalid email or password');
-        var token = TTAuth.createToken(user.id);
+        var token = Auth.createToken(user.id);
         res.success({token: token});
       });
     });
@@ -60,10 +60,10 @@ exports.login = function(req, res) {
  */
 exports.create = function(req, res) {
   // sanitize input
-  if (!TTValidator.toPhoneNumber(req.body.phone_number))
+  if (!Validator.toPhoneNumber(req.body.phone_number))
     return res.error(412, 'Invalid format for phone number');
 
-  if (!TTValidator.isPassword(req.body.password))
+  if (!Validator.isPassword(req.body.password))
     return res.error(412, 'Invalid argument for password');
 
   // create user in database
