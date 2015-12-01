@@ -1,0 +1,26 @@
+<script src="/socket.io/socket.io.js"></script>
+<input id='ham' type='text'>
+<script>
+  var socket = io();
+
+  window.onload = function() {
+    document.querySelector('#ham').addEventListener('keyup', function(e) {
+      console.log(e.which)
+      switch (e.which) {
+        case 38:
+          socket.emit('up');
+          break;
+        case 37:
+          socket.emit('left');
+          break;
+        case 40:
+          socket.emit('down');
+          break;
+        case 39:
+          socket.emit('right');
+          break;
+      }
+    })
+  }
+
+</script>
