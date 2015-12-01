@@ -11,7 +11,7 @@ exports.apiError = function(req, res, next) {
 exports.apiSuccess = function(req, res, next) {
   res.success = function(msg) {
     res.status(200).json({
-      error: msg
+      payload: msg
     });
   };
 

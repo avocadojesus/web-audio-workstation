@@ -76,11 +76,7 @@ module.exports = function(sequelize, DataTypes) {
     updatedAt: 'updated',
     classMethods: {
       associate: function(models) {
-        this.belongsToMany(models.User, {
-          through: models.Friend,
-          as: 'Friends',
-          foreignKey: 'user1_id'
-        });
+        
       }
     },
     instanceMethods: {

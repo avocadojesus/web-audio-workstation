@@ -14,15 +14,13 @@ exports.create = function() {
   return new Promise(function(resolve, reject) {
     db.sequelize.sync({force: true}).then(function() {
       var models = {
-        User: db.User,
-        Friend: db.Friend
+        User: db.User
       };
 
       Fixtures
         .loadFiles(
           [
-            __dirname + '/../../fixtures/users.json',
-            __dirname + '/../../fixtures/friends.json'
+            __dirname + '/../../fixtures/users.json'
           ], models)
         .then(function() {
           return resolve();
@@ -48,11 +46,6 @@ exports.delete = function() {
             function(cb) {
               db.User.truncate({transaction: t}).then(function() {
                 return cb();
-              })
-            },
-            function(cb) {
-              db.Friend.truncate({transaction: t}).then(function() {
-                cb();
               })
             }
           ], function() {
